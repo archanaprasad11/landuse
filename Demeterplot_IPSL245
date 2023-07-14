@@ -1,0 +1,24 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import netCDF4
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import xarray as xr
+
+urb35 = netCDF4.Dataset('/home/jupyter-archanaprasad11/data_demeter/GCAM_Demeter_LU_ssp2_rcp45_ipsl_2035.nc',
+                              mode = 'r')
+
+lons = urb35.variables['longitude'][:]
+lats = urb35.variables['latitude'][:]
+urban35=urb35.variables['PFT31'][:]
+urban_units= urb35.variables['PFT31'].Unit
+#urban transpose is important--raw data in lon, lat instead of lat, lon
+urban35_transpose = np.transpose(urban35)
+
+fig=plt.figure(figsize=(16,16))
+ax= plt.axes(projection=ccrs.PlateCarree())
+plt.contourf(lons, lats, urban35_transpose, cmap= 'YlOrRd')
+ax.gridlines(draw_labels=True)
+ax.set_extent([-76, -73, 38, 43])
+ax.coastlines()
+plt.show()
