@@ -1,0 +1,48 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import netCDF4
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import xarray as xr
+
+# Open the NetCDF file
+nc = netCDF4.Dataset('/home/jupyter-archanaprasad11/data_demeter/GCAM_Demeter_LU_ssp2_rcp45_ipsl_2050.nc',
+                              mode = 'r')
+
+# Read the required dimensions and variables
+lat = nc.variables['latitude'][:]
+lon = nc.variables['longitude'][:]
+data = nc.variables['PFT31'][:]  
+
+# Define the subset indices
+lat_start, lat_end = [38, 43]  # Specify the desired latitude range
+lon_start, lon_end = [-76, -73]  # Specify the desired longitude range
+
+# Define the target latitude and longitude
+target_lat1 = 38  # Example latitude
+target_lat2 = 43
+target_lon1 = -76  # Example longitude
+target_lon2= -73
+
+# Find the nearest latitude and longitude indices
+lat_index1 = np.abs(lat - target_lat1).argmin()
+lat_index2 = np.abs(lat - target_lat2).argmin()
+lon_index1 = np.abs(lon - target_lon1).argmin()
+lon_index2 = np.abs(lon - target_lon2).argmin()
+
+print(lat_index1, lat_index2, lon_index1, lon_index2)
+
+# Subset the data in the netcdf
+subset_lat = lat[939:1039]
+subset_lon = lon[2079:2139]
+subset_data = data[2079:2139, 939:1039]
+print(subset_data)
+
+#urban transpose is important--raw data in lon, lat instead of lat, lon
+urban50_transpose = np.transpose(subset_data)
+
+#plot the data
+plt.contourf(urban50_transpose, cmap='YlOrRd')
+plt.colorbar()
+plt.title('Subsetted NetCDF Data')
+plt.show()
